@@ -217,7 +217,7 @@ var excuseGenerator = function() {
     var Critter = G.Alt(["kitten", "squirrel", "puppy", "hedgehog", "pony",
                          "antelope", "sugar ant", "black widow spider"]);
     var WeirdCritterTrait = G.Alt(["pink", "sapient", "flying", "tentacled",
-            "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skiny", "eldrich"]);
+            "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
             "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air","orphans' tears"
             ["liquefied", Critter, "flesh"]]);
