@@ -181,11 +181,11 @@ var excuseGenerator = function() {
                       "the Azn Bad Boys",
                       "the Merchants",
                       "a mysterious unnaturally competent woman in a suit",
-                      "the Slaugherhouse 9",
+                      "the Slaughterhouse 9",
                       "some meddling teenagers in a van",
                       "the local chapter of the Hell's Angels",
                       "the Girl Scout's cookie-selling brigade",
-			"the Leauge of Door to Door Salesmen"]);
+			"the League of Door to Door Salesmen"]);
     var LocationSpec = G.Alt(["in the nearby park",
                               "at the beach",
                               "at Fugly Bob's",
