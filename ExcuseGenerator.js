@@ -223,7 +223,7 @@ var excuseGenerator = function() {
             "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
             "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air",
-		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water", "bubbly champaigne"
+		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water", "bubbly champagne",
             ["liquefied", Critter, "flesh"]]);
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
