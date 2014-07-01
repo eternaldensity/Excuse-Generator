@@ -185,7 +185,8 @@ var excuseGenerator = function() {
                       "some meddling teenagers in a van",
                       "the local chapter of the Hell's Angels",
                       "the Girl Scout's cookie-selling brigade",
-			"the League of Door to Door Salesmen"]);
+			"the League of Door to Door Salesmen",
+			"an angry swarm of BEES"]);
     var LocationSpec = G.Alt(["in the nearby park",
                               "at the beach",
                               "at Fugly Bob's",
@@ -203,23 +204,26 @@ var excuseGenerator = function() {
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
 	"muffin", "t-shirt", "belt and suspenders", "vase", "sippy cup", "beer coaster"]);
     var WeirdThingyTrait = G.Alt(["radioactive", "thermonuclear", "ballistic",
-            "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking"]);
+            "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking", "uncontrollable", "self-steering", "vibrating"]);
     var WackyActivityProgressive = G.Alt(["mauling random passers-by",
             ["setting up a muffin stall", LocationSpec],
             ["spraypainting suggestive graffiti", LocationSpec],
             ["writing sappy love notes to", Hero],
             ["setting up an online dating profile for", Endbringer],
-            "miming the aristocrats joke",
+            "acting out the Who's on First sketch",
             "tracking mud all over the office",
             "howling majestically to the moon",
-		"twerking", "conga dancing"]);
+		"twerking", "conga dancing",
+		["planking",LocationSpec],
+		["dressing up as", Endbringer]]);
 
     var Critter = G.Alt(["kitten", "squirrel", "puppy", "hedgehog", "pony",
                          "antelope", "sugar ant", "black widow spider"]);
     var WeirdCritterTrait = G.Alt(["pink", "sapient", "flying", "tentacled",
             "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
-            "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air","orphans' tears"
+            "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air",
+		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water"
             ["liquefied", Critter, "flesh"]]);
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
@@ -365,6 +369,9 @@ var excuseGenerator = function() {
     Top.or(["I'm a reporter. I'm here to", ReporterReason], 0.1);
     Top.or(["I'm a writer. I'm here to ask some questions about", SomeHero,
             "as research for", WrittenWork, "I'm writing"], 0.05);
+    Top.or(["I'm a janitor. I'm here to clean up a mass of", Substance,
+            "which was spilled by", Hero], 0.02);
+	Top.or(G.RollUntil(["I'm a repairman. I'm here fix the damage from the recent fight between{B}", Gang, "{AND}and", Gang], noGangInfighting),0.02); 
     return G.Postprocess(G.Postprocess(Top, removeTags),
                          squashSpacesAddPeriod);
 
