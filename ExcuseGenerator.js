@@ -170,7 +170,9 @@ var G = function() {
 
 var excuseGenerator = function() {
     var g;
-
+    
+    var contessa = "a mysterious unnaturally competent woman in a suit";
+                      
     var Hero = G.Alt(["Armsmaster", "Alexandria", "Eidolon", "Legend",
             "Chevalier", "Miss Militia", "Mouse Protector", "Myrddin", "Chubster", /*"Dauntless" NOPE not him */ "Narwhal"]);
     var Endbringer = G.Alt(["Simurgh", "Ziz", "Leviathan", "Behemoth",
@@ -180,7 +182,7 @@ var excuseGenerator = function() {
     var Gang = G.Alt(["the Empire 88",
                       "the Azn Bad Boys",
                       "the Merchants",
-                      "a mysterious unnaturally competent woman in a suit",
+                      contessa,
                       "the Slaughterhouse 9",
                       "some meddling teenagers in a van",
                       "the local chapter of the Hell's Angels",
@@ -239,6 +241,30 @@ var excuseGenerator = function() {
 
 	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights"]);
 
+    // These results can be salvaged instead of rerolling.
+    function contessaFix(str) {
+    	str = str.replace('a member of ' + contessa, contessa, 'g');
+    	str = str.replace('superpowered members of ' + contessa, contessa, 'g');
+    	str = str.replace('members of ' + contessa, contessa, 'g');
+    	return str;
+    }
+    
+    function removeArticleWhenUncountable(s) {
+        if (/underwear/.test(s)) {
+            s = s.replace(" an ", " ");
+        }
+        return s;
+    }
+
+    function noRedundantGargantuanness(s) {
+        return !/gargantuan/.test(s);
+    }
+
+    function noGangInfighting(s) {
+        var matches = s.match(/{B}([^{]*){AND}and(.*)/);
+        return matches[1].trim() != matches[2].trim();
+    }
+
     // ModdedThingy
     g = G.Seq([G.Opt(ValueModifier), G.Opt(QualityModifier),
                G.Opt(Theme), Thingy]);
@@ -251,11 +277,11 @@ var excuseGenerator = function() {
     })
 
     // TriggeringEntity
-    g = G.Alt(["I{!OWNER_POSSESSIVE=my}{!HAVE_PLACEHOLDER=have}",
-               ["my pet{!OWNER_POSSESSIVE=its}{!HAVE_PLACEHOLDER=has}", 
+    g = G.Alt(["I{!OWNER_POSSESSIVE=my}{!HAVE_PLACEHOLDER=have}{!OWNER_NOMINATIVE=I}",
+               ["my pet{!OWNER_POSSESSIVE=its}{!HAVE_PLACEHOLDER=has}{!OWNER_NOMINATIVE=it}", 
                 Critter],
-               "my daughter{!HAVE_PLACEHOLDER=has}{!OWNER_POSSESSIVE=her}",
-               "my son{!HAVE_PLACEHOLDER=has}{!OWNER_POSSESSIVE=his}"]); 
+               "my daughter{!HAVE_PLACEHOLDER=has}{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}",
+               "my son{!HAVE_PLACEHOLDER=has}{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}"]); 
     var TriggeringEntity = g;
 
     var FunnyBodyPart = G.Alt(["ears", "toes", "eyes", "navel", "nostrils",
@@ -278,12 +304,7 @@ var excuseGenerator = function() {
     g.or(["{!CLASS_PLACEHOLDER=tinker}of", WeirdCritterTrait, Critter,
             "cloning"]);
     g.or(["{!CLASS_PLACEHOLDER=shaker}to conjure", WorldEffect]);
-    function removeArticleWhenUncountable(s) {
-        if (/underwear/.test(s)) {
-            s = s.replace(" an ", " ");
-        }
-        return s;
-    }
+
     g.or(G.Postprocess(["{!CLASS_PLACEHOLDER=master}to project an",
                             "indestructible animate",
                             WeirdThingyTrait, Thingy], 
@@ -295,19 +316,22 @@ var excuseGenerator = function() {
                 "antennae", "eyestalks", "an epic beard", 
                 [Substance, "spikes"]]), 
           "out of {OWNER_POSSESSIVE}", FunnyBodyPart]);
-    function noRedundantGargantuanness(s) {
-        return !/gargantuan/.test(s);
-    }
     g.or(G.RollUntil(["{!CLASS_PLACEHOLDER=changer}to turn into a giant",
                       WeirdCritterTrait, Critter], noRedundantGargantuanness));	
-    g.or(["{!CLASS_PLACEHOLDER=stranger}to exactly impersonate",Hero,"whenever I consume", Substance]);
+    g.or(["{!CLASS_PLACEHOLDER=stranger}to exactly impersonate",Hero,"whenever {OWNER_NOMINATIVE} consume", Substance]);
     g.or(["{!CLASS_PLACEHOLDER=stranger}to become invisible to",
           G.Alt(["redheaded", "bald", "mohawk sporting", "mullet bearing"]),
           Professionals, "wearing", G.Alt(["yarmulkas", "top hats", 
                                            "flip-flops", "togas"])]);
     var Power = g;
 
-    var SomeHero = G.Alt([Hero, ["that new hero with the power", Power]]);
+    g = G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}','{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']);
+    var SomeHero = G.Alt([Hero, G.Postprocess([
+    	               G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
+    	                      '{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']),
+    	               "that new hero with the power", Power],
+                       tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
+                                  'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE'))]);
 
     // CitizenExcuse
     g = G.Alt();
@@ -315,22 +339,15 @@ var excuseGenerator = function() {
           "that I found", WackyActivityProgressive]);
     g.or(["hand over a tinkertech", G.Rep(WeirdThingyTrait,0, 2), Thingy,
           "that I found", LocationSpec]);
-    function noGangInfighting(s) {
-        var matches = s.match(/{B}([^{]*){AND}and(.*)/);
-        return matches[1].trim() != matches[2].trim();
-    }
     g.or(G.RollUntil(["report a gang fight between{B}", Gang, "{AND}and", 
                       Gang], noGangInfighting)); 
-    function noMembersOfContessa(s) {
-        return !/woman in a suit/.test(s);
-    }
-    g.or(G.RollUntil(["report superpowered members of", Gang, 
-                      "loitering", LocationSpec], noMembersOfContessa));
+    g.or(G.Postprocess(["report superpowered members of", Gang, 
+                      "loitering", LocationSpec], contessaFix));
     g.or(G.Postprocess(["report that", TriggeringEntity, 
                             "{HAVE_PLACEHOLDER} triggered with the",
                             "{CLASS_PLACEHOLDER} type power", Power],
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
-                                  'OWNER_POSSESSIVE')));
+                                  'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')));
     g.or(["report that", Endbringer, "has been sighted", LocationSpec]);
     var CitizenExcuse = g;
 
@@ -352,11 +369,8 @@ var excuseGenerator = function() {
     g = G.Alt();
     g.or(["complain that my", ModdedThingy, "has been", PropertyCrimePast, 
           "by", Gang]);
-    function noMembersOfContessa2(s) {
-        return !/member of/.test(s) || !/woman in a suit/.test(s);
-    }
     g.or(G.RollUntil(["complain that", ThirdParty, "has been", PersonCrimePast,
-                Gang], noMembersOfContessa2));
+                Gang], contessaFix));
     g.or(["complain that", ThirdParty, "has been hypnotised by", Gang, "into",
           WackyActivityProgressive]);
     g.or(["reclaim my stolen", ModdedThingy]);
@@ -379,14 +393,19 @@ var excuseGenerator = function() {
             "which was spilled by", Hero], 0.02);
 	Top.or(G.RollUntil(["I'm a repairman. I'm here fix the damage from the recent fight between{B}", Gang, "{AND}and", Gang], noGangInfighting),0.02); 
     return G.Postprocess(G.Postprocess(Top, removeTags),
-                         squashSpacesAddPeriod);
+                         finalGrammarFixes);
 
     function removeTags(s) {
-        return s.replace(/{[^}]*}/g, "");
+    	s = s.replace('{AND}','');
+    	s = s.replace('{B}','');
+    	return s; // other tags remain in for debugging purposes
+        //return s.replace(/{[^}]*}/g, "");
     }
 
-    function squashSpacesAddPeriod(s) {
-        return s.replace(/\s+/, " ")+".";
+    function finalGrammarFixes(s) {
+        s = s.replace(/\s+/, " ");
+        s = s.replace(/\ba ([aeiou])/, 'an $1');
+        return s+".";
     }
 
     function tagCopyFun() {
