@@ -184,9 +184,9 @@ var excuseGenerator = function() {
                       "the Slaughterhouse 9",
                       "some meddling teenagers in a van",
                       "the local chapter of the Hell's Angels",
-                      "the Girl Scout's cookie-selling brigade",
+                      "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
-			"an angry swarm of BEES"]);
+			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
     var LocationSpec = G.Alt(["in the nearby park",
                               "at the beach",
                               "at Fugly Bob's",
@@ -198,7 +198,7 @@ var excuseGenerator = function() {
 			"in the rusted hulk of a ship",
 			"in the general post office",
 			"inside Arcadia High",
-			"in the Winslow High girls' locker room"]);
+			"in the Winslow High girls' locker room", "in a seedy hotel room"]);
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
@@ -223,7 +223,7 @@ var excuseGenerator = function() {
             "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
             "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air",
-		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water"
+		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water", "bubbly champaigne"
             ["liquefied", Critter, "flesh"]]);
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
@@ -236,6 +236,8 @@ var excuseGenerator = function() {
     var QualityModifier = G.Alt(["tinkertech", "handcrafted", "masterwork",
             "customized", "dwarven", "restored", "recycled"]);
     var Theme = G.Postprocess(Hero, function (s) { return s + "-themed"; });
+
+	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights"]);
 
     // ModdedThingy
     g = G.Seq([G.Opt(ValueModifier), G.Opt(QualityModifier),
@@ -275,7 +277,7 @@ var excuseGenerator = function() {
             "construction"]);
     g.or(["{!CLASS_PLACEHOLDER=tinker}of", WeirdCritterTrait, Critter,
             "cloning"]);
-    g.or("{!CLASS_PLACEHOLDER=shaker}to conjure appropriate theme music");
+    g.or(["{!CLASS_PLACEHOLDER=shaker}to conjure", WorldEffect]);
     function removeArticleWhenUncountable(s) {
         if (/underwear/.test(s)) {
             s = s.replace(" an ", " ");
@@ -297,7 +299,8 @@ var excuseGenerator = function() {
         return !/gargantuan/.test(s);
     }
     g.or(G.RollUntil(["{!CLASS_PLACEHOLDER=changer}to turn into a giant",
-                      WeirdCritterTrait, Critter], noRedundantGargantuanness));
+                      WeirdCritterTrait, Critter], noRedundantGargantuanness));	
+    g.or(["{!CLASS_PLACEHOLDER=stranger}to exactly impersonate",Hero,"whenever I consume", Substance]);
     g.or(["{!CLASS_PLACEHOLDER=stranger}to become invisible to",
           G.Alt(["redheaded", "bald", "mohawk sporting", "mullet bearing"]),
           Professionals, "wearing", G.Alt(["yarmulkas", "top hats", 
@@ -338,6 +341,9 @@ var excuseGenerator = function() {
          "abductions"]);
     g.or(["interview", SomeHero, "about the recent wave of hate crime against",
           Professionals]);
+    g.or(["discuss the use of", Substance, "by", SomeHero, "against",
+          Gang]);
+    g.or(["ask whether", SomeHero, "left a", ModdedThingy, LocationSpec]);
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
     var ReporterReason = g;
