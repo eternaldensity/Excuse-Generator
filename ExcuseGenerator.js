@@ -363,7 +363,7 @@ var excuseGenerator = function() {
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
                                   'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')));
     g.or(["report that", Endbringer, "has been sighted", LocationAt]);
-    g.or(g.Postprocess(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationAt],contessaFix));
+    g.or(G.Postprocess(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationAt],contessaFix));
     var CitizenExcuse = g;
 
     // ReporterReason
