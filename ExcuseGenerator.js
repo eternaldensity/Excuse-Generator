@@ -213,8 +213,8 @@ var excuseGenerator = function() {
     function mapLocationsNone(s) {
 	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$3')
     }
-    var LocationTo = G.Postprocess(Locations, mapLocationsTo);
-    var LocationAt = G.Postprocess(Locations, mapLocationsAt);
+    var LocationTo = G.Postprocess(LocationsRaw, mapLocationsTo);
+    var LocationAt = G.Postprocess(LocationsRaw, mapLocationsAt);
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
