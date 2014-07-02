@@ -398,7 +398,7 @@ var excuseGenerator = function() {
     function removeTags(s) {
     	s = s.replace('{AND}','','g');
     	s = s.replace('{B}','','g');
-    	s = s.replace(/{![^}]*}/g,'')''
+    	s = s.replace(/{![^}]*}/g,'');
     	return s; // other tags remain in for debugging purposes
         //return s.replace(/{[^}]*}/g, "");
     }
