@@ -448,7 +448,7 @@ function newExcuse() {
 function bulkGenerate() {
 	var j=0;
 	var excuses = [];
-	re = RegExp(document.getElementById("match").value);
+	var re = RegExp(document.getElementById("match").value);
 	for(var i=0;i<1000;i++) {
 		var excuse = excuseGenerator.generate();
 		if(re.test(excuse)) excuses[j++] = excuse;
