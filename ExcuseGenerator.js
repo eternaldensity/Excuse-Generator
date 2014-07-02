@@ -189,7 +189,7 @@ var excuseGenerator = function() {
                       "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
 			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
-    var LocationsRaw = [
+    var LocationsRaw = G.Alt([
 	    "in@into@ the nearby park",
 	    "at@to@   the beach",
 	    "at@to@   Fugly Bob's",
@@ -203,7 +203,7 @@ var excuseGenerator = function() {
 	    "inside@into@ Arcadia High",
 	    "in@into@ the Winslow High girls' locker room",
 	    "in@into@ a seedy hotel room",
-	    ];
+	    ]);
     function mapLocationsAt(s) {
 	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$1 $3')
     }
