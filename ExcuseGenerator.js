@@ -189,7 +189,7 @@ var excuseGenerator = function() {
                       "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
 			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
-    var LocationsRaw = [
+    var LocationsRaw = G.Alt([
 	    "in@into@ the nearby park",
 	    "at@to@   the beach",
 	    "at@to@   Fugly Bob's",
@@ -203,7 +203,7 @@ var excuseGenerator = function() {
 	    "inside@into@ Arcadia High",
 	    "in@into@ the Winslow High girls' locker room",
 	    "in@into@ a seedy hotel room",
-	    ];
+	    ]);
     function mapLocationsAt(s) {
 	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$1 $3')
     }
@@ -213,8 +213,8 @@ var excuseGenerator = function() {
     function mapLocationsNone(s) {
 	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$3')
     }
-    var LocationTo = G.Postprocess(Locations, mapLocationsTo);
-    var LocationAt = G.Postprocess(Locations, mapLocationsAt);
+    var LocationTo = G.Postprocess(LocationsRaw, mapLocationsTo);
+    var LocationAt = G.Postprocess(LocationsRaw, mapLocationsAt);
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
@@ -363,7 +363,7 @@ var excuseGenerator = function() {
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
                                   'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')));
     g.or(["report that", Endbringer, "has been sighted", LocationAt]);
-    g.or(g.Postprocess(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationAt],contessaFix));
+    g.or(G.Postprocess(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationAt],contessaFix));
     var CitizenExcuse = g;
 
     // ReporterReason
@@ -445,3 +445,17 @@ function newExcuse() {
     document.getElementById("excuse").textContent = excuse;
 }
 
+function bulkGenerate() {
+	var j=0;
+	var excuses = [];
+	var re = RegExp(document.getElementById("match").value);
+	for(var i=0;i<1000;i++) {
+		var excuse = excuseGenerator.generate();
+		if(re.test(excuse)) excuses[j++] = excuse;
+		if(j > 32) break;
+	}
+	if(excuses.length == 0)
+		document.getElementById('excuses').textContent = 'No suitable excuses found.';
+	else
+		document.getElementById('excuses').textContent = excuses.join('\n');
+}
