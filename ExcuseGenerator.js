@@ -189,18 +189,20 @@ var excuseGenerator = function() {
                       "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
 			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
-    var LocationSpec = G.Alt(["in the nearby park",
-                              "at the beach",
-                              "at Fugly Bob's",
-                              "in the Fortress Construction's board meeting room",
-                              "at the local retirement home",
-                              "in my neighborhood",
-			"in my mailbox",
-			"on my roof",
-			"in the rusted hulk of a ship",
-			"in the general post office",
-			"inside Arcadia High",
-			"in the Winslow High girls' locker room", "in a seedy hotel room"]);
+    var LocationNoPrep = G.Alt(["{!LOCATION_PREPOSITION=in} the nearby park",
+                        "{!LOCATION_PREPOSITION=at} the beach",
+                        "{!LOCATION_PREPOSITION=at} Fugly Bob's",
+                        "{!LOCATION_PREPOSITION=in} the Fortress Construction's board meeting room",
+                        "{!LOCATION_PREPOSITION=at} the local retirement home",
+                        "{!LOCATION_PREPOSITION=in} my neighborhood",
+			"{!LOCATION_PREPOSITION=in} my mailbox",
+			"{!LOCATION_PREPOSITION=on} my roof",
+			"{!LOCATION_PREPOSITION=in} the rusted hulk of a ship",
+			"{!LOCATION_PREPOSITION=in} the general post office",
+			"{!LOCATION_PREPOSITION=inside} Arcadia High",
+			"{!LOCATION_PREPOSITION=in} the Winslow High girls' locker room",
+			"{!LOCATION_PREPOSITION=in} a seedy hotel room"]);
+    var LocationSpec = G.Alt([G.Postprocess(["{LOCATION_PREPOSITION}",LocationNoPrep], tagCopyFun("LOCATION_PREPOSITION"))])
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
@@ -230,7 +232,7 @@ var excuseGenerator = function() {
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
             "asked on a date by a member of", "tickled by", "glared at by",
-	 "winked at by", "ignored by", "recruited by", "teleported by", "sent to the future by"]);
+	 "winked at by", "ignored by", "recruited by", ["teleported into",LocationNoPrep, "by"], "sent to the future by"]);
     var PropertyCrimePast = G.Alt(["stolen", "defaced", "ruined with spilled lemonade",
             "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty]]);
     var ValueModifier = G.Alt(["vintage", "antique", "priceless",
@@ -349,6 +351,7 @@ var excuseGenerator = function() {
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
                                   'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')));
     g.or(["report that", Endbringer, "has been sighted", LocationSpec]);
+    g.or(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationSpec]);
     var CitizenExcuse = g;
 
     // ReporterReason
