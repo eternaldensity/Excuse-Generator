@@ -247,7 +247,7 @@ var excuseGenerator = function() {
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
             "asked on a date by a member of", "tickled by", "glared at by",
-	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by"], "mindswapped with", "mistaken for");
+	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by", "mindswapped with", "mistaken for"]);
     var PropertyCrimePast = G.Alt(["stolen", "defaced", "ruined with spilled lemonade",
             "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty]]);
     var ValueModifier = G.Alt(["vintage", "antique", "priceless",
