@@ -174,7 +174,7 @@ var excuseGenerator = function() {
     var contessa = "a mysterious unnaturally competent woman in a suit";
                       
     var Hero = G.Alt(["Armsmaster", "Alexandria", "Eidolon", "Legend",
-            "Chevalier", "Miss Militia", "Mouse Protector", "Myrddin", "Chubster", /*"Dauntless" NOPE not him */ "Narwhal"]);
+            "Chevalier", "Miss Militia", "Mouse Protector", "Myrddin", "Chubster", /*"Dauntless" NOPE not him */ "Narwhal", "Dragon"]);
     var Endbringer = G.Alt(["Simurgh", "Ziz", "Leviathan", "Behemoth",
             "Hadhayosh"]);
     var Professionals = G.Alt(["accountants", "auto mechanics", "clowns",
@@ -218,13 +218,16 @@ var excuseGenerator = function() {
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
-	"muffin", "t-shirt", "belt and suspenders", "vase", "sippy cup", "beer coaster"]);
+	"muffin", "t-shirt", "belt and suspenders", "vase", "sippy cup", "beer coaster",
+	"vegetable peeler", "fruit juicer", "blender", "fedora"]);
     var WeirdThingyTrait = G.Alt(["radioactive", "thermonuclear", "ballistic",
-            "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking", "uncontrollable", "self-steering", "vibrating"]);
+            "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking", "uncontrollable", "self-steering", "vibrating",
+"anti-rust", "self-lubricating", "fractal-based"]);
     var WackyActivityProgressive = G.Alt(["mauling random passers-by",
             ["setting up a muffin stall", LocationAt],
             ["spraypainting suggestive graffiti", LocationAt],
             ["writing sappy love notes to", Hero],
+            ["auditioning for a movie role as", Hero],
             ["setting up an online dating profile for", Endbringer],
             "acting out the Who's on First sketch",
             "tracking mud all over the office",
@@ -239,21 +242,21 @@ var excuseGenerator = function() {
             "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
             "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air",
-		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water", "bubbly champagne",
+		"orphans' tears", "hot buttered popcorn", "coffee beans", "powdered water", "bubbly champagne",["powdered", [Endbringer], "figurines"],
             ["liquefied", Critter, "flesh"]]);
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
             "asked on a date by a member of", "tickled by", "glared at by",
-	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by"]);
+	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by"], "mindswapped with", "mistaken for");
     var PropertyCrimePast = G.Alt(["stolen", "defaced", "ruined with spilled lemonade",
             "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty]]);
     var ValueModifier = G.Alt(["vintage", "antique", "priceless",
-            "limited edition", "autographed", "heirloom"]);
+            "limited edition", "autographed", "heirloom", "foil"]);
     var QualityModifier = G.Alt(["tinkertech", "handcrafted", "masterwork",
-            "customized", "dwarven", "restored", "recycled"]);
+            "customized", "dwarven", "restored", "recycled", "damaged"]);
     var Theme = G.Postprocess(Hero, function (s) { return s + "-themed"; });
 
-	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights"]);
+	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights", "the sound of drums"]);
 
     // These results can be salvaged instead of rerolling.
     function contessaFix(str) {
