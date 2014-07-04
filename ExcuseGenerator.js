@@ -189,20 +189,32 @@ var excuseGenerator = function() {
                       "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
 			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
-    var LocationNoPrep = G.Alt(["{!LOCATION_PREPOSITION=in} the nearby park",
-                        "{!LOCATION_PREPOSITION=at} the beach",
-                        "{!LOCATION_PREPOSITION=at} Fugly Bob's",
-                        "{!LOCATION_PREPOSITION=in} the Fortress Construction's board meeting room",
-                        "{!LOCATION_PREPOSITION=at} the local retirement home",
-                        "{!LOCATION_PREPOSITION=in} my neighborhood",
-			"{!LOCATION_PREPOSITION=in} my mailbox",
-			"{!LOCATION_PREPOSITION=on} my roof",
-			"{!LOCATION_PREPOSITION=in} the rusted hulk of a ship",
-			"{!LOCATION_PREPOSITION=in} the general post office",
-			"{!LOCATION_PREPOSITION=inside} Arcadia High",
-			"{!LOCATION_PREPOSITION=in} the Winslow High girls' locker room",
-			"{!LOCATION_PREPOSITION=in} a seedy hotel room"]);
-    var LocationSpec = G.Alt([G.Postprocess(["{LOCATION_PREPOSITION}",LocationNoPrep], tagCopyFun("LOCATION_PREPOSITION"))])
+    var LocationsRaw = G.Alt([
+	    "in@into@ the nearby park",
+	    "at@to@   the beach",
+	    "at@to@   Fugly Bob's",
+	    "in@into@ Fortress Construction's board meeting room",
+	    "at@to@   the local retirement home",
+	    "in@into@ my neighborhood",
+	    "in@into@ my mailbox",
+	    "on@onto@ my roof",
+	    "in@into@ the rusted hulk of a ship",
+	    "in@into@ the post office",
+	    "inside@into@ Arcadia High",
+	    "in@into@ the Winslow High girls' locker room",
+	    "in@into@ a seedy hotel room",
+	    ]);
+    function mapLocationsAt(s) {
+	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$1 $3')
+    }
+    function mapLocationsTo(s) {
+	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$2 $3')
+    }
+    function mapLocationsNone(s) {
+	    return s.replace(/^(\w*)@(\w*)@\s*(.*)/,'$3')
+    }
+    var LocationTo = G.Postprocess(LocationsRaw, mapLocationsTo);
+    var LocationAt = G.Postprocess(LocationsRaw, mapLocationsAt);
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
@@ -210,15 +222,15 @@ var excuseGenerator = function() {
     var WeirdThingyTrait = G.Alt(["radioactive", "thermonuclear", "ballistic",
             "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking", "uncontrollable", "self-steering", "vibrating"]);
     var WackyActivityProgressive = G.Alt(["mauling random passers-by",
-            ["setting up a muffin stall", LocationSpec],
-            ["spraypainting suggestive graffiti", LocationSpec],
+            ["setting up a muffin stall", LocationAt],
+            ["spraypainting suggestive graffiti", LocationAt],
             ["writing sappy love notes to", Hero],
             ["setting up an online dating profile for", Endbringer],
             "acting out the Who's on First sketch",
             "tracking mud all over the office",
             "howling majestically to the moon",
 		"twerking", "conga dancing",
-		["planking",LocationSpec],
+		["planking",LocationAt],
 		["dressing up as", Endbringer]]);
 
     var Critter = G.Alt(["kitten", "squirrel", "puppy", "hedgehog", "pony",
@@ -232,7 +244,7 @@ var excuseGenerator = function() {
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild"]);
     var PersonCrimePast = G.Alt(["pranked by",
             "asked on a date by a member of", "tickled by", "glared at by",
-	 "winked at by", "ignored by", "recruited by", ["teleported into",LocationNoPrep, "by"], "sent to the future by"]);
+	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by"]);
     var PropertyCrimePast = G.Alt(["stolen", "defaced", "ruined with spilled lemonade",
             "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty]]);
     var ValueModifier = G.Alt(["vintage", "antique", "priceless",
@@ -340,18 +352,18 @@ var excuseGenerator = function() {
     g.or(["hand over a", G.Rep(WeirdCritterTrait, 0, 2), "tinkertech", Critter,
           "that I found", WackyActivityProgressive]);
     g.or(["hand over a tinkertech", G.Rep(WeirdThingyTrait,0, 2), Thingy,
-          "that I found", LocationSpec]);
+          "that I found", LocationAt]);
     g.or(G.RollUntil(["report a gang fight between{B}", Gang, "{AND}and", 
                       Gang], noGangInfighting)); 
     g.or(G.Postprocess(["report superpowered members of", Gang, 
-                      "loitering", LocationSpec], contessaFix));
+                      "loitering", LocationAt], contessaFix));
     g.or(G.Postprocess(["report that", TriggeringEntity, 
                             "{HAVE_PLACEHOLDER} triggered with the",
                             "{CLASS_PLACEHOLDER} type power", Power],
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
                                   'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')));
-    g.or(["report that", Endbringer, "has been sighted", LocationSpec]);
-    g.or(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationSpec]);
+    g.or(["report that", Endbringer, "has been sighted", LocationAt]);
+    g.or(G.Postprocess(["report overhearing a suspicious conversation between", SomeHero, "and a member of", Gang,LocationAt],contessaFix));
     var CitizenExcuse = g;
 
     // ReporterReason
@@ -363,7 +375,7 @@ var excuseGenerator = function() {
           Professionals]);
     g.or(["discuss the use of", Substance, "by", SomeHero, "against",
           Gang]);
-    g.or(["ask whether", SomeHero, "left a", ModdedThingy, LocationSpec]);
+    g.or(["ask whether", SomeHero, "left a", ModdedThingy, LocationAt]);
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
     var ReporterReason = g;
@@ -431,4 +443,21 @@ var excuseGenerator = function() {
 function newExcuse() {
     var excuse = excuseGenerator.generate();
     document.getElementById("excuse").textContent = excuse;
+}
+
+function bulkGenerate() {
+	var j=0;
+	var excuses = [];
+	var re = RegExp(document.getElementById("match").value);
+	for(var i=0;i<10000;i++) {
+		var excuse = excuseGenerator.generate();
+		if(re.test(excuse)) excuses[j++] = excuse;
+		if(j > 32) break;
+	}
+	if(excuses.length == 0)
+		document.getElementById('excuses').textContent = 'No suitable excuses found.';
+	else
+		document.getElementById('excuses').textContent =
+		j + ' of ' + i + ' excuses found (' + (j/i*100) + ' percent)\n' + 
+		excuses.join('\n');
 }
