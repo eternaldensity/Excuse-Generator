@@ -449,7 +449,7 @@ function bulkGenerate() {
 	var j=0;
 	var excuses = [];
 	var re = RegExp(document.getElementById("match").value);
-	for(var i=0;i<1000;i++) {
+	for(var i=0;i<10000;i++) {
 		var excuse = excuseGenerator.generate();
 		if(re.test(excuse)) excuses[j++] = excuse;
 		if(j > 32) break;
@@ -457,5 +457,7 @@ function bulkGenerate() {
 	if(excuses.length == 0)
 		document.getElementById('excuses').textContent = 'No suitable excuses found.';
 	else
-		document.getElementById('excuses').textContent = excuses.join('\n');
+		document.getElementById('excuses').textContent =
+		j + ' of ' + i + ' excuses found (' + (j/i*100) + ' percent)\n' + 
+		excuses.join('\n');
 }
