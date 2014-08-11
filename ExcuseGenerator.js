@@ -173,8 +173,19 @@ var excuseGenerator = function() {
     
     var contessa = "a mysterious unnaturally competent woman in a suit";
                       
-    var Hero = G.Alt(["Armsmaster", "Alexandria", "Eidolon", "Legend",
-            "Chevalier", "Miss Militia", "Mouse Protector", "Myrddin", "Chubster", /*"Dauntless" NOPE not him */ "Narwhal", "Dragon"]);
+    var Hero = G.Alt([
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=halberd}Armsmaster", 
+	"{!OWNER_POSSESSIVE=her}{!OWNER_OBJECT=library}Alexandria",
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=fish tank}Eidolon", 
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=son}Legend",
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=cannonblade}Chevalier", 
+	"{!OWNER_POSSESSIVE=her}{!OWNER_OBJECT=bazooka}Miss Militia", 
+	"{!OWNER_POSSESSIVE=her}{!OWNER_OBJECT=ham and cheese}Mouse Protector", 
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=wand}Myrddin", 
+	"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=bacon}Chubster", 
+	/*"{!OWNER_POSSESSIVE=his}{!OWNER_OBJECT=arc lance}Dauntless", NOPE not him */ 
+	"{!OWNER_POSSESSIVE=her}{!OWNER_OBJECT=bust}Narwhal", 
+	"{!OWNER_POSSESSIVE=her}{!OWNER_OBJECT=top secret suit}Dragon"]);
     var Endbringer = G.Alt(["Simurgh", "Ziz", "Leviathan", "Behemoth",
             "Hadhayosh"]);
     var Professionals = G.Alt(["accountants", "auto mechanics", "clowns",
@@ -189,6 +200,8 @@ var excuseGenerator = function() {
                       "the Girl Scouts' cookie-selling brigade",
 			"the League of Door to Door Salesmen",
 			"an angry swarm of BEES", "THE TECHNO QUEEN'S DASTARDLY TECHIES"]);
+
+    var Master = G.Alt(['Regent','Pretender','Heartbreaker','Canary']);
     var LocationsRaw = G.Alt([
 	    "in@into@ the nearby park",
 	    "at@to@   the beach",
@@ -306,7 +319,7 @@ var excuseGenerator = function() {
 
     // Power
     g = G.Alt();
-    g.or("of acute alliteration{!CLASS_PLACEHOLDER=thinker}");
+    g.or("of acutely artful and aimless alliteration{!CLASS_PLACEHOLDER=thinker}");
     g.or(["{!CLASS_PLACEHOLDER=thinker}of", Critter, "migratory pattern",
           "prediction"]);
     g.or(["{!CLASS_PLACEHOLDER=blaster}of slaughtering firstborn",
@@ -342,13 +355,26 @@ var excuseGenerator = function() {
                                            "flip-flops", "togas"])]);
     var Power = g;
 
+
     g = G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}','{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']);
     var SomeHero = G.Alt([Hero, G.Postprocess([
     	               G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
     	                      '{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']),
+			['{!OWNER_OBJECT=',Thingy,'}'],
     	               "that new hero with the power", Power],
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
                                   'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE'))]);
+
+    var g = G.Alt();
+    g.or([SomeHero,G.Alt(['is pregnant','has a drug problem','is faking {OWNER_POSSESSIVE} powers',
+		'is an evil clone','bought {OWNER_POSSESSIVE} powers','was drunk and disorderly',
+		'is working overtime far too often','is from the future','is the fourth Endbringer',
+		'is retiring in two days','is my father','is secretly the Space Pope',
+		'suffers from the delusion that the world is fiction','is secretly Director Costa-Brown',
+		['is being controlled by',Master],
+		'never existed',
+		'is a Time Lord and {OWNER_POSSESSIVE} {OWNER_OBJECT} is {OWNER_POSSESSIVE} TARDIS'])]);
+    var SomeHeroProblem = G.Postprocess(g,tagCopyFun('OWNER_POSSESSIVE','OWNER_OBJECT','OWNER_POSSESSIVE'))
 
     // CitizenExcuse
     g = G.Alt();
@@ -381,6 +407,7 @@ var excuseGenerator = function() {
     g.or(["ask whether", SomeHero, "left a", ModdedThingy, LocationAt]);
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
+    g.or(["inquire about the rumours which imply that", SomeHeroProblem]);
     var ReporterReason = g;
 
     // VictimComplaint
@@ -422,8 +449,8 @@ var excuseGenerator = function() {
     }
 
     function finalGrammarFixes(s) {
-        s = s.replace(/\s+/, " ");
-        s = s.replace(/\ba ([aeiou])/, 'an $1');
+        s = s.replace(/\s\s+/g, " ");
+        s = s.replace(/\ba ([aeiou])/g, 'an $1');
         return s+".";
     }
 
