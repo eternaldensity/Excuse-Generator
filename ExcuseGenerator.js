@@ -448,12 +448,12 @@ var excuseGenerator = function() {
     g.or(["discuss the use of", Substance, "by", SomeHero, "against",
           Gang]);
     g.or(["ask whether", SomeHero, "left a", ModdedThingy, LocationAt]);
-    g.or(G.Postprocess(G.Postprocess([G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
+    g.or(G.Postprocess(G.Postprocess(G.Postprocess([G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
     	                            '{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}'])
-    	                            ,"ask whether the new cape with the {CLASS_PLACEHOLDER} type power"
+    	                            ,"ask whether the new cape who has the {CLASS_PLACEHOLDER} type power"
     	                            , Power, "and wears", Clothing ,"is a hero or a villain"],
                        tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
-                                  'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')),fixTypelessPower)
+                                  'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')),fixTypelessPower),maskFix)
     );
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
