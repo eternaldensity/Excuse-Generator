@@ -324,7 +324,7 @@ var excuseGenerator = function() {
     }
     function fixIConsumes(str)
     {
-        return str.replace('I consumes','I consume', 'g');
+        return str.replace('I consumes','I consume', 'g').replace('you consumes','you consume', 'g');
     }
     
     function removeArticleWhenUncountable(s) {
@@ -425,6 +425,13 @@ var excuseGenerator = function() {
                     fixTypelessPower
             )]
     );
+    
+    var YourPower = G.Postprocess(G.Postprocess(G.Postprocess([
+        "You{!OWNER_POSSESSIVE=your}{!HAVE_PLACEHOLDER=have}{!OWNER_NOMINATIVE=you}", 
+        "{HAVE_PLACEHOLDER} the {CLASS_PLACEHOLDER} type power", Power],
+                       tagCopyFun('HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
+                                  'OWNER_POSSESSIVE', 'OWNER_NOMINATIVE')),
+        fixTypelessPower),fixIConsumes);
 
     var g = G.Alt();
     g.or([SomeHero,G.Alt([
@@ -531,9 +538,11 @@ var excuseGenerator = function() {
         tagCopyFun('OWNER_POSSESSIVE', 'OWNER_OBJECT')), 0.02);
 	Top.or(G.RollUntil(["I'm a repairman. I'm here fix the damage from the recent fight between{B}", 
 	    Gang, "{AND}and", Gang], noGangInfighting),0.02); 
-    return G.Postprocess(G.Postprocess(Top, removeTags),
+    var excuseGen= G.Postprocess(G.Postprocess(Top, removeTags),
                          finalGrammarFixes);
-
+    var powerGen=G.Postprocess(G.Postprocess(YourPower, removeTags),
+                         finalGrammarFixes);
+    return {'excuse':excuseGen,'power':powerGen};
     function removeTags(s) {
     	s = s.replace('{AND}','','g');
     	s = s.replace('{B}','','g');
@@ -565,8 +574,12 @@ var excuseGenerator = function() {
 }()
 
 function newExcuse() {
-    var excuse = excuseGenerator.generate();
+    var excuse = excuseGenerator.excuse.generate();
     document.getElementById("excuse").textContent = excuse;
+}
+function newPower() {
+    var power = excuseGenerator.power.generate();
+    document.getElementById("power").textContent = power;
 }
 
 function bulkGenerate() {
@@ -574,7 +587,7 @@ function bulkGenerate() {
 	var excuses = [];
 	var re = RegExp(document.getElementById("match").value);
 	for(var i=0;i<10000;i++) {
-		var excuse = excuseGenerator.generate();
+		var excuse = excuseGenerator.excuse.generate();
 		if(re.test(excuse)) excuses[j++] = excuse;
 		if(j >= 32){
 	        i++; 
@@ -587,4 +600,24 @@ function bulkGenerate() {
 		document.getElementById('excuses').textContent =
 		j + ' of ' + i + ' excuses found (' + (j/i*100) + ' percent)\n' + 
 		excuses.join('\n');
+}
+
+function bulkGeneratePowers() {
+	var j=0;
+	var powers = [];
+	var re = RegExp(document.getElementById("match").value);
+	for(var i=0;i<10000;i++) {
+		var power = excuseGenerator.power.generate();
+		if(re.test(power)) powers[j++] = power;
+		if(j >= 32){
+	        i++; 
+	        break;
+	    }
+	}
+	if(powers.length == 0)
+		document.getElementById('powers').textContent = 'No suitable powers found.';
+	else
+		document.getElementById('powers').textContent =
+		j + ' of ' + i + ' powers found (' + (j/i*100) + ' percent)\n' + 
+		powers.join('\n');
 }
