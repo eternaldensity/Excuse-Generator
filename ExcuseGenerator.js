@@ -304,6 +304,7 @@ var excuseGenerator = function() {
     var Time = G.Alt(["midnight", "Friday", "close of business", "the next full moon", "the end of the big match", "the time it takes me to count to ten", "the next Endbringer attack", "lunchtime", "teatime", "the end of school holidays"]);
     
     var Restraint = G.Alt(["chains", "a straight-jacket", "a blindfold", "whipped cream", "a bodybag"]);
+    var RestraintManner = G.Alt(["carefully", "properly", "sensibly", "logically", "tenderly", "absolutely"]);
 
 	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights", "the sound of drums"]);
 
@@ -341,6 +342,10 @@ var excuseGenerator = function() {
         var matches = s.match(/{B}([^{]*){AND}and(.*)/);
         return matches[1].trim() != matches[2].trim();
     }
+    
+    function parenthesize(s){
+        return "("+s+")";
+    }
 
     // ModdedThingy
     g = G.Seq([G.Opt(ValueModifier), G.Opt(QualityModifier),
@@ -348,7 +353,6 @@ var excuseGenerator = function() {
     var ModdedThingy = G.Postprocess(g, function(s) {
         if (/doll|action figure|plushie/.test(s)) {
             // no redundantly themed merchandise
-            //console.debug(s);
             s = s.replace(/([A-Z][^\s]+\s*)*themed\s*/, "");
         }
         return s;
@@ -406,7 +410,7 @@ var excuseGenerator = function() {
 
     g = G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}','{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']);
     var SomeHero = G.Alt(
-            [/*Hero, */ G.Postprocess(
+            [Hero, G.Postprocess(
                     [G.Postprocess(
                             [G.Alt(
                                     ['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
@@ -505,7 +509,7 @@ var excuseGenerator = function() {
 
     g = G.Alt();
     g.or([Num, Unit, "of", Substance]);
-    g.or([SomeHero, "in", Restraint]);
+    g.or([SomeHero, G.Postprocess([RestraintManner, "restrained in", Restraint],parenthesize)]);
     g.or(["the only", ModdedThingy, "in the world"]);
     g.or(["a", ValueModifier, WeirdThingyTrait, SwingThing]);
     g.or(["a", WeirdCritterTrait, Critter, "and a helicopter full of spaghetti"]);    
@@ -547,7 +551,6 @@ var excuseGenerator = function() {
     function tagCopyFun() {
         var tags = arguments;
         var copier = function(s) {
-            console.debug(s);
             var re;
             for (var i = 0; i < tags.length; ++i) {
                 re = RegExp("{!" + tags[i] + "=([^}]*)}");
