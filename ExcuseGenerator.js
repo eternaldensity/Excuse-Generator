@@ -237,14 +237,21 @@ var excuseGenerator = function() {
     function makeHeroPossessive(s) {
 	    return s.replace(/^(.*)}(.*)$/,"$2's")
     }
+    function mapHeroesNone(s) {
+	    return s.replace(/^(.*)}(.*)$/,"$2")
+    }
     var LocationTo = G.Postprocess(LocationsRaw, mapLocationsTo);
     var LocationAt = G.Postprocess(LocationsRaw, mapLocationsAt);
-    var HeroPossessive = G.Postprocess(Hero, makeHeroPossessive);
+    var LocationNone = G.Postprocess(LocationsRaw, mapLocationsNone);
+    var HeroPossessive = G.Postprocess(Hero, makeHeroPossessive);    
+	var HeroOnly=G.Postprocess(Hero,mapHeroesNone);
+	
     var Thingy = G.Alt(["wristwatch", "underwear", "necktie", "lunchbox",
             "wallet", "cellphone", "baseball cap", "monocle", "waffle",
             "buzzsaw", "saucepan", "HDMI cable", "sock", "toaster oven",
 	"muffin", "t-shirt", "belt and suspenders", "vase", "sippy cup", "beer coaster",
 	"vegetable peeler", "fruit juicer", "blender", "fedora"]);
+	Thingy.or([HeroOnly, G.Alt(["doll", "action figure", "plushie"])]);
     var WeirdThingyTrait = G.Alt(["radioactive", "thermonuclear", "ballistic",
             "tactical", "AI-controlled", "antimatter", "monomolecular", "futuristic", "alternate", "metallic", "non-stick", "autotuned", "shrinking", "uncontrollable", "self-steering", "vibrating",
 "anti-rust", "self-lubricating", "fractal-based"]);
@@ -263,15 +270,15 @@ var excuseGenerator = function() {
 		
     var Clothing = G.Alt(["a top-hat", "a PRT uniform", "a police uniform", "nothing but a smile", "a topless bikini", "strategically placed Christmas ornaments", "aviator sunglasses", "a black hoodie", "a red and white striped beanie", "a ten gallon hat and cowboy boots", "a three piece suit", "copious amounts of whipped cream", "a battleship", "a doge costume", "a spider costume"]);
     Clothing.or([HeroPossessive, "mask"]);   
-    var SwingThing = G.Alt(['a fish', 'a backpack', 'a cat', 'a herring', 'a Nerf-bat', 
-    'a clue-bat', 'a squeaky toy mallet', 'an inflatable pool toy', 
-    'a golf club', 'an obviously fake foam sword', 'a croquet mallet',
-    'an inflatable baseball bat', 'a bottle', 'a nailbat', 'a brickbat', 'a football bat',
-    'a folding chair', 'a brick']);
+    var SwingThing = G.Alt(['fish', 'backpack', 'cat', 'herring', 'Nerf-bat', 
+    'clue-bat', 'squeaky toy mallet', 'inflatable pool toy', 
+    'golf club', 'obviously fake foam sword', 'croquet mallet',
+    'inflatable baseball bat', 'bottle', 'nailbat', 'brickbat', 'football bat',
+    'folding chair', 'brick']);
 
-    var Critter = G.Alt(["kitten", "squirrel", "puppy", "hedgehog", "pony",
-                         "antelope", "sugar ant", "black widow spider"]);
-    var WeirdCritterTrait = G.Alt(["pink", "sapient", "flying", "tentacled",
+    var Critter = G.Alt(["kitten", "squirrel", "puppy", "hedgehog", "pony", "unicorn", "bullet ant",
+                         "antelope", "sugar ant", "black widow spider", "bear cub", "honey badger"]);
+    var WeirdCritterTrait = G.Alt(["pink", "sapient", "flying", "tentacled", "angry",
             "insectoid", "gargantuan", "glittery", "long-toothed", "slimy", "skinny", "eldrich"]);
     var Substance = G.Alt(["ice cream", "candy", "cocaine", "psychic energy",
             "liquid nitrogen", "radioactive sludge", "jello", "clay","solidified air",
@@ -279,16 +286,24 @@ var excuseGenerator = function() {
 		"bubbly champagne", "solid clouds", "aerogel", "terracotta", ["powdered", [Endbringer], "figurines"],
             ["liquefied", Critter, "flesh"]]);
     var ThirdParty = G.Alt([["my pet", Critter], "my son", "my daughter", "my evil twin", "your mom", "my red-headed stepchild", "my brother", "my sister", "my cousin"]);
-    var PersonCrimePast = G.Alt(["pranked by",
+    var PersonCrimePast = G.Alt(["pranked by", "chased by", "wolf-whistled by", "racially slurred by",
             "asked on a date by a member of", "tickled by", "glared at by",
 	 "winked at by", "ignored by", "recruited by", ["teleported",LocationTo, "by"], "sent to the future by", "mindswapped with", "mistaken for a member of"]);
     var PropertyCrimePast = G.Alt(["stolen", "defaced", "ruined with spilled lemonade",
-            "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty]]);
-    var ValueModifier = G.Alt(["vintage", "antique", "priceless",
-            "limited edition", "autographed", "heirloom", "foil"]);
-    var QualityModifier = G.Alt(["tinkertech", "handcrafted", "masterwork",
+            "vandalised", "spray painted", "replaced with a mirror image", "sent to Earth Aleph", "hidden in the Boat Graveyard", ["fed to",ThirdParty], "chipped", "tarnished", "hidden in a school locker"]);
+    var ValueModifier = G.Alt(["vintage", "antique", "priceless", "overpriced", "one-of-a-kind", "rare",
+            "limited edition", "autographed", "heirloom", "foil", "unique", "authorized"]);
+    var QualityModifier = G.Alt(["tinkertech", "handcrafted", "masterwork", "Armsmaster-approved", "Wards-tested",
             "customized", "dwarven", "restored", "recycled", "damaged"]);
-    var Theme = G.Postprocess(Hero, function (s) { return s + "-themed"; });
+    var Theme = G.Postprocess(HeroOnly, function (s) { return s + "-themed"; });
+    
+    var Num = G.Alt(["a dozen", "a baker's dozen", "thirty-four", "five", "over nine thousand", "forty", "fifteen million", "one mirrion", "pi", "the correct number of", "enough", "zero", "aleph-null"]);
+    
+    var Unit = G.Alt(["buckets", "teaspoons", "units", "packets", "baggies", "lunchboxes", "crates", "boxcars", "Pacific Oceans", "moon units", "upturned bowler hats", "pints", "liters", "litres", "gallons", "tons", "tonnes"]);
+    
+    var Time = G.Alt(["midnight", "Friday", "close of business", "the next full moon", "the end of the big match", "the time it takes me to count to ten", "the next Endbringer attack", "lunchtime", "teatime", "the end of school holidays"]);
+    
+    var Restraint = G.Alt(["chains", "a straight-jacket", "a blindfold", "whipped cream", "a bodybag"]);
 
 	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights", "the sound of drums"]);
 
@@ -333,6 +348,7 @@ var excuseGenerator = function() {
     var ModdedThingy = G.Postprocess(g, function(s) {
         if (/doll|action figure|plushie/.test(s)) {
             // no redundantly themed merchandise
+            //console.debug(s);
             s = s.replace(/([A-Z][^\s]+\s*)*themed\s*/, "");
         }
         return s;
@@ -390,12 +406,12 @@ var excuseGenerator = function() {
 
     g = G.Alt(['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}','{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']);
     var SomeHero = G.Alt(
-            [Hero, G.Postprocess(
+            [/*Hero, */ G.Postprocess(
                     [G.Postprocess(
                             [G.Alt(
                                     ['{!OWNER_POSSESSIVE=her}{!OWNER_NOMINATIVE=she}',
     	                            '{!OWNER_POSSESSIVE=his}{!OWNER_NOMINATIVE=he}']),
-			                ['{!OWNER_OBJECT=',Thingy,'}'],
+			                ['{!OWNER_OBJECT=',ModdedThingy,'}'],
     	                    "the new hero with the {CLASS_PLACEHOLDER} type power", Power],
                             tagCopyFun(
                                     'HAVE_PLACEHOLDER', 'CLASS_PLACEHOLDER',
@@ -407,7 +423,8 @@ var excuseGenerator = function() {
     );
 
     var g = G.Alt();
-    g.or([SomeHero,G.Alt(['is pregnant','has a drug problem','is faking {OWNER_POSSESSIVE} powers',
+    g.or([SomeHero,G.Alt([
+        'is pregnant','has a drug problem','is faking {OWNER_POSSESSIVE} powers',
 		'is an evil clone','bought {OWNER_POSSESSIVE} powers','was drunk and disorderly',
 		'is working overtime far too often','is from the future','is the fourth Endbringer',
 		'is retiring in two days','is my father', 'is your mom','is secretly the Space Pope',
@@ -458,8 +475,16 @@ var excuseGenerator = function() {
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
     g.or(["inquire about the rumours which imply that", SomeHeroProblem]);
-    g.or(["do research for a human interest piece to", G.Alt(["build sympathy for the human we all know lies","expose the monster"]), "behind", HeroPossessive, "mask"]);
+    g.or(["do research for a human interest piece to", 
+        G.Alt(["build sympathy for the human we all know lies","expose the monster"]), 
+        "behind", HeroPossessive, "mask"]);
     var ReporterReason = g;
+    
+    
+    g = G.Alt();
+    g.or(["hit me with a", SwingThing]);
+    g.or(["was last seen", LocationAt, "and is swinging a", SwingThing, "at anyone within reach"]);
+    var VillainBehaviour=g;
 
     // VictimComplaint
     g = G.Alt();
@@ -469,8 +494,7 @@ var excuseGenerator = function() {
                 Gang], contessaFix));
     g.or(["complain that", ThirdParty, "has been hypnotised by", Gang, "into",
           WackyActivityProgressive]);
-    g.or(["complain that a villain wearing", Clothing, "hit me with", SwingThing]);
-    g.or(["complain that a villain wearing", Clothing, "was last seen", LocationAt, "and is swinging", SwingThing, "at anyone within reach"]);
+    g.or(["complain that a villain wearing", Clothing, VillainBehaviour]);
     g.or(["reclaim my stolen", ModdedThingy]);
     var VictimComplaint = g;
 
@@ -478,6 +502,14 @@ var excuseGenerator = function() {
             "a philosophical treatise", "a bildungsroman", "a romance novel",
             "a dendrology textbook", "a bestselling self-help series", "a galactic guide for hitchhikers", "the new edition of Parahumanology for Dummies", "an urban fantasy", "a poem",
 ["the unofficial reveal-all biography of",Hero]]);
+
+    g = G.Alt();
+    g.or([Num, Unit, "of", Substance]);
+    g.or([SomeHero, "in", Restraint]);
+    g.or(["the only", ModdedThingy, "in the world"]);
+    g.or(["a", ValueModifier, WeirdThingyTrait, SwingThing]);
+    g.or(["a", WeirdCritterTrait, Critter, "and a helicopter full of spaghetti"]);    
+    var Ransom = g;
 
     var Top = G.Alt();
     Top.or(["I'm a concerned citizen. I'm here to", CitizenExcuse]);
@@ -489,7 +521,12 @@ var excuseGenerator = function() {
             "as research for", WrittenWork, "I'm writing"], 0.05);
     Top.or(["I'm a janitor. I'm here to clean up a mass of", Substance,
             "which was spilled by", Hero], 0.02);
-	Top.or(G.RollUntil(["I'm a repairman. I'm here fix the damage from the recent fight between{B}", Gang, "{AND}and", Gang], noGangInfighting),0.02); 
+    Top.or(G.Postprocess(["I have a message from", Gang, "which says that", Hero, 
+        "won't see {OWNER_POSSESSIVE} {OWNER_OBJECT} again unless", Ransom, 
+        "is delivered to", LocationNone, "by", Time], 
+        tagCopyFun('OWNER_POSSESSIVE', 'OWNER_OBJECT')), 0.02);
+	Top.or(G.RollUntil(["I'm a repairman. I'm here fix the damage from the recent fight between{B}", 
+	    Gang, "{AND}and", Gang], noGangInfighting),0.02); 
     return G.Postprocess(G.Postprocess(Top, removeTags),
                          finalGrammarFixes);
 
@@ -510,6 +547,7 @@ var excuseGenerator = function() {
     function tagCopyFun() {
         var tags = arguments;
         var copier = function(s) {
+            console.debug(s);
             var re;
             for (var i = 0; i < tags.length; ++i) {
                 re = RegExp("{!" + tags[i] + "=([^}]*)}");
@@ -535,7 +573,10 @@ function bulkGenerate() {
 	for(var i=0;i<10000;i++) {
 		var excuse = excuseGenerator.generate();
 		if(re.test(excuse)) excuses[j++] = excuse;
-		if(j > 32) break;
+		if(j >= 32){
+	        i++; 
+	        break;
+	    }
 	}
 	if(excuses.length == 0)
 		document.getElementById('excuses').textContent = 'No suitable excuses found.';
