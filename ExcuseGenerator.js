@@ -301,7 +301,7 @@ var excuseGenerator = function() {
     
     var Unit = G.Alt(["buckets", "teaspoons", "units", "packets", "baggies", "lunchboxes", "crates", "boxcars", "Pacific Oceans", "moon units", "upturned bowler hats", "pints", "liters", "litres", "gallons", "tons", "tonnes"]);
     
-    var Time = G.Alt(["midnight", "Friday", "close of business", "the next full moon", "the end of the big match", "the time it takes me to count to ten", "the next Endbringer attack", "lunchtime", "teatime", "the end of school holidays"]);
+    var Time = G.Alt(["midnight", "Friday", "close of business", "the next full moon", "the end of the big match", "the time it takes me to count to ten", "the next Endbringer attack", "lunchtime", "teatime", "the end of school holidays", "my birthday", "Christmas", "the time the cows come home", "the day before the election"]);
     
     var Restraint = G.Alt(["chains", "a straight-jacket", "a blindfold", "whipped cream", "a bodybag"]);
     var RestraintManner = G.Alt(["carefully", "properly", "sensibly", "logically", "tenderly", "absolutely"]);
