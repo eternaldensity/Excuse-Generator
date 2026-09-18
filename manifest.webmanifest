@@ -1,0 +1,14 @@
+{
+  "name": "Armsmaster's Random Excuse Generator",
+  "short_name": "Excuses",
+  "description": "Generate random excuses, powers, and cover stories. Works offline; static pages only.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e1016",
+  "theme_color": "#0e1016",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

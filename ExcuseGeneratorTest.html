@@ -1,17 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="ExcuseGenerator.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1016">
+<meta name="description" content="Bulk-generate excuses and run the generator smoke tests. Free static web app.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Armsmaster's Random Excuse Generator">
+<meta property="og:title" content="🧪 Generator Test Page">
+<meta property="og:description" content="Bulk-generate excuses and run the generator smoke tests. Free static web app.">
+<meta property="og:url" content="https://eternaldensity.github.io/Excuse-Generator/ExcuseGeneratorTest.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="🧪 Generator Test Page">
+<meta name="twitter:description" content="Bulk-generate excuses and run the generator smoke tests. Free static web app.">
 <title>Armsmaster's Random Excuse Generator Test form</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/app.css">
+<script src="ExcuseGenerator.js" defer></script>
 </head>
-
 <body>
-<button id="bulk-generate" type="button">Generate excuses</button>
-<button id="run-tests" type="button">Run smoke tests</button><hr>
-<label for="match">filter:</label><input id="match">
+<header class="app">
+  <h1>🧪 Generator Tests</h1>
+  <a class="homelink" href="index.html">🏠 <span class="lbl">Home</span></a>
+  <nav><a href="ExcuseGenerator.html">🗣️ Excuses</a></nav>
+</header>
+<main>
+  <div class="card">
+    <h2>Smoke tests</h2>
+    <p class="muted">Generates 500 excuses + 500 powers and asserts the output stays clean: no leftover tags, terminal punctuation, Contessa/Dragon cleanups applied.</p>
+    <button class="primary" id="run-tests" type="button" style="width:100%">Run smoke tests</button>
     <pre id="test-results"></pre>
+  </div>
+  <div class="card">
+    <h2>Bulk excuses</h2>
+    <label for="match">Filter (literal text, case-insensitive)</label>
+    <input type="search" id="match" placeholder="e.g. Contessa">
+    <div style="margin-top:8px"><button id="bulk-generate" type="button" style="width:100%">Generate excuses</button></div>
     <pre id="excuses"></pre>
+  </div>
+</main>
+<footer class="sitefoot">
+  <div>Generates excuses which are random, duh.</div>
+  <div>Original concept by EldritchPangolin (who's unfortunately not Armsmaster)</div>
+</footer>
+<script>if (typeof navigator !== "undefined" && "serviceWorker" in navigator) { addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script>
 </body>
 </html>

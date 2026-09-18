@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1016">
+<meta name="description" content="Armsmaster's Random Excuse Generator: produce a cover story for your visit to the PRT building, right in your browser. Free static web apps.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Armsmaster's Random Excuse Generator">
+<meta property="og:title" content="Armsmaster's Random Excuse Generator — Web Apps">
+<meta property="og:description" content="Generate random excuses, powers, and cover stories for your visit to the PRT building. Free static web apps.">
+<meta property="og:url" content="https://eternaldensity.github.io/Excuse-Generator/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Armsmaster's Random Excuse Generator — Web Apps">
+<meta name="twitter:description" content="Generate random excuses, powers, and cover stories for your visit to the PRT building. Free static web apps.">
+<title>Armsmaster's Random Excuse Generator — Web Apps</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/app.css">
+<script src="ExcuseGenerator.js" defer></script>
+</head>
+<body>
+<header class="app"><h1>🛡️ Armsmaster's Excuse Generator</h1></header>
+<main>
+  <div class="grid2">
+    <div class="card">
+      <h2>🗣️ Excuse Generator</h2>
+      <p class="muted">Conceal the true purpose of your visit to the PRT building with a freshly generated cover story.</p>
+      <a href="ExcuseGenerator.html"><button class="primary" style="width:100%">Open the Excuse Generator</button></a>
+    </div>
+    <div class="card">
+      <h2>⚡ Power Generator</h2>
+      <p class="muted">Roll a brand-new cape power, plus bulk generation with a literal text filter.</p>
+      <a href="PowerGenerator.html"><button class="primary" style="width:100%">Open the Power Generator</button></a>
+    </div>
+    <div class="card">
+      <h2>🧪 Test Page</h2>
+      <p class="muted">Bulk-generate excuses and run the built-in smoke tests that assert the generator output stays clean.</p>
+      <a href="ExcuseGeneratorTest.html"><button class="primary" style="width:100%">Open the Test Page</button></a>
+    </div>
+  </div>
+  <p class="muted small">Static pages — no account, no server. Your data never leaves your browser.</p>
+  <a class="btn" href="https://github.com/eternaldensity/Excuse-Generator" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:12px">🛠 Contribute Here</a>
+</main>
+<footer class="sitefoot">
+  <div>Generates excuses which are random, duh.</div>
+  <div>Original concept by EldritchPangolin (who's unfortunately not Armsmaster)</div>
+</footer>
+<script>if (typeof navigator !== "undefined" && "serviceWorker" in navigator) { addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script>
+</body>
+</html>

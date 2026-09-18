@@ -1,29 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="ExcuseGenerator.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1016">
+<meta name="description" content="Roll a random cape power, or bulk-generate powers with a literal text filter. Free static web app.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Armsmaster's Random Excuse Generator">
+<meta property="og:title" content="⚡ Power Generator">
+<meta property="og:description" content="Roll a random cape power, or bulk-generate powers with a literal text filter. Free static web app.">
+<meta property="og:url" content="https://eternaldensity.github.io/Excuse-Generator/PowerGenerator.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="⚡ Power Generator">
+<meta name="twitter:description" content="Roll a random cape power, or bulk-generate powers with a literal text filter. Free static web app.">
 <title>Armsmaster's Random Power Generator</title>
-<style>
-#top h3, #top p {
-    margin: 0;
-    padding: 0;
-}
-</style>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/app.css">
+<script src="ExcuseGenerator.js" defer></script>
 </head>
-
 <body>
-<div id="top">
-    <h3>Armsmaster's Random Power Generator</h3>
-    <p>Version 0.9</p>
-</div>
-<button id="generate-power" type="button">Generate power</button><hr>
-<div id="plan">
+<header class="app">
+  <h1>⚡ Power Generator</h1>
+  <a class="homelink" href="index.html">🏠 <span class="lbl">Home</span></a>
+  <nav><a href="ExcuseGenerator.html">🗣️ Excuses</a></nav>
+</header>
+<main>
+  <div class="card">
+    <h2>Your power <span class="muted small">v0.9</span></h2>
     <blockquote id="power"></blockquote>
-</div>
-<hr><button id="bulk-generate-powers" type="button">Generate bulk powers</button>
-<label for="match">filter:</label><input id="match">
+    <button class="primary" id="generate-power" type="button" style="width:100%">Generate power</button>
+  </div>
+  <div class="card">
+    <h2>Bulk powers</h2>
+    <label for="match">Filter (literal text, case-insensitive)</label>
+    <input type="search" id="match" placeholder="e.g. tinker">
+    <div style="margin-top:8px"><button id="bulk-generate-powers" type="button" style="width:100%">Generate bulk powers</button></div>
     <pre id="powers"></pre>
+  </div>
+</main>
+<footer class="sitefoot">
+  <div>Generates excuses which are random, duh.</div>
+  <div>Original concept by EldritchPangolin (who's unfortunately not Armsmaster)</div>
+</footer>
+<script>if (typeof navigator !== "undefined" && "serviceWorker" in navigator) { addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script>
 </body>
 </html>
