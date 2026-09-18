@@ -1,7 +1,9 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<script src="ExcuseGenerator.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="ExcuseGenerator.js" defer></script>
 <title>Armsmaster's Random Power Generator</title>
 <style>
 #top h3, #top p {
@@ -16,12 +18,12 @@
     <h3>Armsmaster's Random Power Generator</h3>
     <p>Version 0.9</p>
 </div>
-<button onclick="newPower()">Generate power</button><hr>
+<button id="generate-power" type="button">Generate power</button><hr>
 <div id="plan">
     <blockquote id="power"></blockquote>
 </div>
-<hr><button onclick="bulkGeneratePowers()">Generate bulk powers</button>
-filter:<input id="match">
-    <pre id="powers"></blockquote>
+<hr><button id="bulk-generate-powers" type="button">Generate bulk powers</button>
+<label for="match">filter:</label><input id="match">
+    <pre id="powers"></pre>
 </body>
 </html>

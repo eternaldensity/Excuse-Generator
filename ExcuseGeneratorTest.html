@@ -1,13 +1,17 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<script src="ExcuseGenerator.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="ExcuseGenerator.js" defer></script>
 <title>Armsmaster's Random Excuse Generator Test form</title>
 </head>
 
 <body>
-<button onclick="bulkGenerate()">Generate excuses</button><hr>
-filter:<input id="match">
-    <pre id="excuses"></blockquote>
+<button id="bulk-generate" type="button">Generate excuses</button>
+<button id="run-tests" type="button">Run smoke tests</button><hr>
+<label for="match">filter:</label><input id="match">
+    <pre id="test-results"></pre>
+    <pre id="excuses"></pre>
 </body>
 </html>

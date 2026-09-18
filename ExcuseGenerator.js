@@ -4,6 +4,18 @@
  *
  * Coded by EldritchPangolin (who's unfortunately not Armsmaster)
  *
+ * File layout:
+ *   Part 1: tiny grammar-combinator library (`G`: Quote/Seq/Alt/Rep/
+ *           Postprocess/RollUntil). `RollUntil(wrapped, predicate)` keeps
+ *           rolling while `predicate(string)` is falsy and returns the raw
+ *           string unchanged; use `Postprocess(wrapped, fixFn)` when you want
+ *           to *transform* the output.
+ *   Part 2: grammar data (`excuseGenerator`). Order matters: base generators
+ *           must be defined before the combinators that extend/reference them
+ *           (e.g. `Thingy.or(...)` / `Clothing.or(...)`), and `Top` /
+ *           `excuseGen` / `powerGen` must be assembled last.
+ *   Part 3: DOM wiring + bulk search + smoke tests (no inline `onclick`
+ *           required; buttons are wired by element id on DOMContentLoaded).
  */
 
 "use strict";
@@ -308,23 +320,31 @@ var excuseGenerator = function() {
 
 	var WorldEffect = G.Alt(["appropriate theme music", "inappropriate theme music", "everyone's most hated earworms", "the Inception BWONG at dramatic moments", "Kung Fu movie captions", "the Lost City of Atlantis", "disco lights", "the sound of drums"]);
 
+    // Replace ALL occurrences of a literal string.
+    // Note: String.prototype.replace with a string pattern only replaces the
+    // first occurrence and ignores a third 'g' argument (flags only apply to
+    // RegExp patterns), so use split/join for literal global replacement.
+    function replaceAllLiteral(haystack, needle, replacement) {
+        return haystack.split(needle).join(replacement);
+    }
+
     // These results can be salvaged instead of rerolling.
     function contessaFix(str) {
-    	str = str.replace('a member of ' + contessa, contessa, 'g');
-    	str = str.replace('superpowered members of ' + contessa, contessa, 'g');
-    	str = str.replace('members of ' + contessa, contessa, 'g');
+    	str = replaceAllLiteral(str, 'a member of ' + contessa, contessa);
+    	str = replaceAllLiteral(str, 'superpowered members of ' + contessa, contessa);
+    	str = replaceAllLiteral(str, 'members of ' + contessa, contessa);
     	return str;
     }
     function maskFix(str){
-        return str.replace("Dragon's mask", "Dragon's newest suit as a hat", 'g');
+        return replaceAllLiteral(str, "Dragon's mask", "Dragon's newest suit as a hat");
     }
     function fixTypelessPower(str)
     {
-        return str.replace('{CLASS_PLACEHOLDER} type power','Power', 'g');
+        return replaceAllLiteral(str, '{CLASS_PLACEHOLDER} type power', 'Power');
     }
     function fixIConsumes(str)
     {
-        return str.replace('I consumes','I consume', 'g').replace('you consumes','you consume', 'g');
+        return replaceAllLiteral(replaceAllLiteral(str, 'I consumes', 'I consume'), 'you consumes', 'you consume');
     }
     
     function removeArticleWhenUncountable(s) {
@@ -340,6 +360,11 @@ var excuseGenerator = function() {
 
     function noGangInfighting(s) {
         var matches = s.match(/{B}([^{]*){AND}and(.*)/);
+        if (!matches) {
+            // Template changed and no longer contains the expected markers:
+            // accept the roll rather than throwing inside RollUntil.
+            return true;
+        }
         return matches[1].trim() != matches[2].trim();
     }
     
@@ -443,7 +468,7 @@ var excuseGenerator = function() {
 		['is being controlled by',Master],
 		'never existed',
 		'is a Time Lord and {OWNER_POSSESSIVE} {OWNER_OBJECT} is {OWNER_POSSESSIVE} TARDIS'])]);
-    var SomeHeroProblem = G.Postprocess(g,tagCopyFun('OWNER_POSSESSIVE','OWNER_OBJECT','OWNER_POSSESSIVE'))
+    var SomeHeroProblem = G.Postprocess(g, tagCopyFun('OWNER_POSSESSIVE', 'OWNER_OBJECT'))
 
     // CitizenExcuse
     g = G.Alt();
@@ -486,9 +511,9 @@ var excuseGenerator = function() {
     g.or(["interview", SomeHero, "about the recent outbreak of", Thingy, 
           "theft"]);
     g.or(["inquire about the rumours which imply that", SomeHeroProblem]);
-    g.or(["do research for a human interest piece to", 
-        G.Alt(["build sympathy for the human we all know lies","expose the monster"]), 
-        "behind", HeroPossessive, "mask"]);
+    g.or(G.Postprocess(["do research for a human interest piece to",
+        G.Alt(["build sympathy for the human we all know lies", "expose the monster"]),
+        "behind", HeroPossessive, "mask"], maskFix));
     var ReporterReason = g;
     
     
@@ -501,11 +526,11 @@ var excuseGenerator = function() {
     g = G.Alt();
     g.or(["complain that my", ModdedThingy, "has been", PropertyCrimePast, 
           "by", Gang]);
-    g.or(G.RollUntil(["complain that", ThirdParty, "has been", PersonCrimePast,
+    g.or(G.Postprocess(["complain that", ThirdParty, "has been", PersonCrimePast,
                 Gang], contessaFix));
     g.or(["complain that", ThirdParty, "has been hypnotised by", Gang, "into",
           WackyActivityProgressive]);
-    g.or(["complain that a villain wearing", Clothing, VillainBehaviour]);
+    g.or(G.Postprocess(["complain that a villain wearing", Clothing, VillainBehaviour], maskFix));
     g.or(["reclaim my stolen", ModdedThingy]);
     var VictimComplaint = g;
 
@@ -544,27 +569,36 @@ var excuseGenerator = function() {
                          finalGrammarFixes);
     return {'excuse':excuseGen,'power':powerGen};
     function removeTags(s) {
-    	s = s.replace('{AND}','','g');
-    	s = s.replace('{B}','','g');
-    	s = s.replace(/{![^}]*}/g,'');
+    	s = replaceAllLiteral(s, '{AND}', '');
+    	s = replaceAllLiteral(s, '{B}', '');
+    	s = s.replace(/{![^}]*}/g, '');
     	return s; // other tags remain in for debugging purposes
         //return s.replace(/{[^}]*}/g, "");
     }
 
     function finalGrammarFixes(s) {
-        s = s.replace(/\s\s+/g, " ");
+        s = s.replace(/\s\s+/g, " ").trim();
         s = s.replace(/\ba ([aeiou])/g, 'an $1');
-        return s+".";
+        if (/[.?!]$/.test(s)) {
+            return s;
+        }
+        return s + ".";
     }
 
     function tagCopyFun() {
         var tags = arguments;
         var copier = function(s) {
-            var re;
+            var re, match, value, placeholder;
             for (var i = 0; i < tags.length; ++i) {
                 re = RegExp("{!" + tags[i] + "=([^}]*)}");
-                if (re.test(s)) {
-                    s = s.replace(RegExp("{"+tags[i]+"}"), s.match(re)[1]);
+                match = s.match(re);
+                if (match) {
+                    value = match[1];
+                    // Global replace so every {TAG} placeholder is filled;
+                    // use a replacer function to avoid `$`-pattern substitution
+                    // in the copied value.
+                    placeholder = RegExp("{" + tags[i] + "}", "g");
+                    s = s.replace(placeholder, function() { return value; });
                 }
             }
             return s;
@@ -582,42 +616,196 @@ function newPower() {
     document.getElementById("power").textContent = power;
 }
 
+var BULK_MAX_ATTEMPTS = 10000;
+var BULK_MAX_RESULTS = 32;
+
+function getBulkFilter() {
+    if (typeof document === "undefined") {
+        return "";
+    }
+    var el = document.getElementById("match");
+    return el ? el.value : "";
+}
+
+// Literal, case-insensitive substring match. The old code fed user input
+// straight into `new RegExp(...)`, so typing `(`, `[`, etc. threw a
+// SyntaxError that aborted the whole run, and `a.` matched almost everything.
+// An empty filter matches everything (same as the old `/(?:)/` behaviour).
+function matchesBulkFilter(text, filter) {
+    if (!filter) {
+        return true;
+    }
+    return text.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
+}
+
+function collectBulkMatches(generateFn, filter) {
+    var matches = [];
+    var tried = 0;
+    for (var i = 0; i < BULK_MAX_ATTEMPTS && matches.length < BULK_MAX_RESULTS; i++) {
+        tried++;
+        var text = generateFn();
+        if (matchesBulkFilter(text, filter)) {
+            matches.push(text);
+        }
+    }
+    return { matches: matches, tried: tried };
+}
+
+function renderBulkResults(elementId, result, pluralNoun, emptyMessage) {
+    if (typeof document === "undefined") {
+        return result;
+    }
+    var el = document.getElementById(elementId);
+    if (!el) {
+        return result;
+    }
+    if (result.matches.length === 0) {
+        el.textContent = emptyMessage;
+    } else {
+        var percent = (result.matches.length / result.tried * 100);
+        el.textContent =
+            result.matches.length + " of " + result.tried + " " + pluralNoun +
+            " found (" + percent + " percent)\n" +
+            result.matches.join("\n");
+    }
+    return result;
+}
+
 function bulkGenerate() {
-	var j=0;
-	var excuses = [];
-	var re = RegExp(document.getElementById("match").value);
-	for(var i=0;i<10000;i++) {
-		var excuse = excuseGenerator.excuse.generate();
-		if(re.test(excuse)) excuses[j++] = excuse;
-		if(j >= 32){
-	        i++; 
-	        break;
-	    }
-	}
-	if(excuses.length == 0)
-		document.getElementById('excuses').textContent = 'No suitable excuses found.';
-	else
-		document.getElementById('excuses').textContent =
-		j + ' of ' + i + ' excuses found (' + (j/i*100) + ' percent)\n' + 
-		excuses.join('\n');
+    var result = collectBulkMatches(function() {
+        return excuseGenerator.excuse.generate();
+    }, getBulkFilter());
+    return renderBulkResults("excuses", result, "excuses", "No suitable excuses found.");
 }
 
 function bulkGeneratePowers() {
-	var j=0;
-	var powers = [];
-	var re = RegExp(document.getElementById("match").value);
-	for(var i=0;i<10000;i++) {
-		var power = excuseGenerator.power.generate();
-		if(re.test(power)) powers[j++] = power;
-		if(j >= 32){
-	        i++; 
-	        break;
-	    }
-	}
-	if(powers.length == 0)
-		document.getElementById('powers').textContent = 'No suitable powers found.';
-	else
-		document.getElementById('powers').textContent =
-		j + ' of ' + i + ' powers found (' + (j/i*100) + ' percent)\n' + 
-		powers.join('\n');
+    var result = collectBulkMatches(function() {
+        return excuseGenerator.power.generate();
+    }, getBulkFilter());
+    return renderBulkResults("powers", result, "powers", "No suitable powers found.");
+}
+
+// Minimal smoke test with real assertions (used by ExcuseGeneratorTest.html).
+// Checks that generated text is non-empty, has no leftover {TAGS}, ends with
+// terminal punctuation, and that the Contessa/Dragon cleanups applied.
+function runGeneratorTests(samples) {
+    samples = samples || 500;
+    var failures = [];
+    function check(name, fn) {
+        try {
+            fn();
+        } catch (e) {
+            failures.push(name + ": " + (e && e.message ? e.message : e));
+        }
+    }
+    function assert(cond, msg) {
+        if (!cond) {
+            throw new Error(msg);
+        }
+    }
+    var i;
+    var excuses = [];
+    var powers = [];
+    for (i = 0; i < samples; i++) {
+        excuses.push(excuseGenerator.excuse.generate());
+        powers.push(excuseGenerator.power.generate());
+    }
+    check("excuses non-empty", function() {
+        assert(excuses.length === samples, "expected " + samples + " excuses");
+        for (var k = 0; k < excuses.length; k++) {
+            assert(typeof excuses[k] === "string" && excuses[k].length > 0, "empty excuse at " + k);
+        }
+    });
+    check("powers non-empty", function() {
+        for (var k = 0; k < powers.length; k++) {
+            assert(typeof powers[k] === "string" && powers[k].length > 0, "empty power at " + k);
+        }
+    });
+    check("no leftover {TAGS}", function() {
+        var all = excuses.concat(powers);
+        for (var k = 0; k < all.length; k++) {
+            assert(all[k].indexOf("{") === -1 && all[k].indexOf("}") === -1,
+                "leftover tag in: " + all[k]);
+        }
+    });
+    check("terminal punctuation", function() {
+        var all = excuses.concat(powers);
+        for (var k = 0; k < all.length; k++) {
+            assert(/[.?!]$/.test(all[k]), "missing terminal punctuation in: " + all[k]);
+            assert(!/[.?!][.?!]$/.test(all[k]), "double punctuation in: " + all[k]);
+        }
+    });
+    check("contessa cleanup", function() {
+        var all = excuses.concat(powers);
+        for (var k = 0; k < all.length; k++) {
+            assert(all[k].indexOf("a member of a mysterious") === -1,
+                "unfixed contessa phrase in: " + all[k]);
+            assert(all[k].indexOf("members of a mysterious") === -1,
+                "unfixed contessa phrase in: " + all[k]);
+        }
+    });
+    check("dragon mask cleanup", function() {
+        var all = excuses.concat(powers);
+        for (var k = 0; k < all.length; k++) {
+            assert(all[k].indexOf("Dragon's mask") === -1,
+                "unfixed Dragon mask in: " + all[k]);
+        }
+    });
+    check("no double spaces", function() {
+        var all = excuses.concat(powers);
+        for (var k = 0; k < all.length; k++) {
+            assert(all[k].indexOf("  ") === -1, "double space in: " + all[k]);
+        }
+    });
+    check("literal bulk filter", function() {
+        // Regression guard for the old `new RegExp(userInput)` crash: filter
+        // matching must be literal, so regex metacharacters are inert.
+        assert(matchesBulkFilter("hello (world)", "(") === true, "'(' should match literally");
+        assert(matchesBulkFilter("hello world", "(") === false, "'(' should not match everything");
+        assert(matchesBulkFilter("aXb", "a.") === false, "'a.' must not act as regex");
+        assert(matchesBulkFilter("anything", "") === true, "empty filter must match all");
+    });
+    var result = { passed: failures.length === 0, failures: failures, samples: samples };
+    if (typeof document !== "undefined") {
+        var el = document.getElementById("test-results");
+        if (el) {
+            el.textContent = result.passed
+                ? "PASS: " + samples + " excuses + " + samples + " powers passed all checks."
+                : "FAIL (" + failures.length + "):\n" + failures.join("\n");
+        }
+    }
+    return result;
+}
+
+// Expose a single public API for reuse/testability (keeps the old globals
+// `excuseGenerator`, `newExcuse`, etc. for backward compatibility).
+if (typeof window !== "undefined") {
+    window.excuseGenerator = excuseGenerator;
+    window.excuseApi = {
+        excuseGenerator: excuseGenerator,
+        newExcuse: typeof newExcuse !== "undefined" ? newExcuse : undefined,
+        newPower: typeof newPower !== "undefined" ? newPower : undefined,
+        bulkGenerate: typeof bulkGenerate !== "undefined" ? bulkGenerate : undefined,
+        bulkGeneratePowers: typeof bulkGeneratePowers !== "undefined" ? bulkGeneratePowers : undefined,
+        runGeneratorTests: typeof runGeneratorTests !== "undefined" ? runGeneratorTests : undefined
+    };
+}
+
+// Wire buttons by id so pages don't need inline `onclick=` attributes.
+// Buttons keep working if a page still uses the legacy inline handlers.
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", function() {
+        function wire(id, fn) {
+            var el = document.getElementById(id);
+            if (el && !el.dataset.wired) {
+                el.addEventListener("click", fn);
+                el.dataset.wired = "1";
+            }
+        }
+        wire("generate-excuse", newExcuse);
+        wire("generate-power", newPower);
+        wire("bulk-generate", bulkGenerate);
+        wire("bulk-generate-powers", bulkGeneratePowers);
+        wire("run-tests", function() { runGeneratorTests(500); });
+    });
 }
